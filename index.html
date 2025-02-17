@@ -152,7 +152,8 @@
                     imagePreview.appendChild(img);
                     imagePreview.style.animation = "none";
                     imagePreview.style.background = "none";
-                    
+                    imagePreview.style.position = "relative";
+
                     const prediction = await model.predict(img);
                     prediction.sort((a, b) => b.probability - a.probability);
                     labelContainer.innerHTML = "";
