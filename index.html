@@ -10,7 +10,7 @@
         body {
             text-align: center;
             font-family: Arial, sans-serif;
-            background: linear-gradient(to right, #b3e0ff, #99ffcc);
+            background: linear-gradient(to right, #e0f7fa, #a5d6a7);
             color: #333;
             padding: 20px;
         }
@@ -19,6 +19,8 @@
             max-width: 1200px;
             margin: 0 auto 20px auto;
             display: block;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
         }
         .upload-btn {
             background-color: #007bb2;
@@ -54,9 +56,8 @@
             background-color: #dbeef6;
         }
         #image-preview {
-            width: 90%;
-            max-width: 500px;
-            height: 550px;
+            width: 500px;
+            height: 500px;
             border: 3px solid #005a87;
             margin: 20px auto;
             display: flex;
@@ -66,11 +67,32 @@
             background-color: #ffffff;
             border-radius: 8px;
             box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        #image-preview::before {
+            content: "Waiting for image...";
+            font-size: 20px;
+            color: #005a87;
+            position: absolute;
+            animation: pulse 1.5s infinite alternate;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            100% { opacity: 0.5; }
         }
         #image-preview img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+        #instructions {
+            font-size: 16px;
+            color: #004c70;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
         }
         @media (max-width: 600px) {
             .upload-btn {
@@ -79,6 +101,10 @@
             }
             #label-container div {
                 font-size: 18px;
+            }
+            #image-preview {
+                width: 300px;
+                height: 300px;
             }
         }
     </style>
@@ -90,6 +116,7 @@
     <input type="file" id="imageUpload" accept="image/*" onchange="predictImage()" />
     <div id="image-preview"></div>
     <div id="label-container"></div>
+    <div id="instructions">This AI model analyzes histopathological images to classify lung cancer types. Upload an image to get a prediction.</div>
     
     <script>
         const URL = "./my_model/";
@@ -120,8 +147,10 @@
                 const img = document.createElement("img");
                 img.src = event.target.result;
                 img.onload = async () => {
-                    document.getElementById("image-preview").innerHTML = "";
-                    document.getElementById("image-preview").appendChild(img);
+                    const imagePreview = document.getElementById("image-preview");
+                    imagePreview.innerHTML = "";
+                    imagePreview.appendChild(img);
+                    imagePreview.style.animation = "none";
                     
                     const prediction = await model.predict(img);
                     prediction.sort((a, b) => b.probability - a.probability);
